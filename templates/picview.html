@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <img class="img-thumbnail m-3" src="/static/photos/{{pic.filename}}">
+    <div class="row ms-3">
+        <div class="col-3 border bg-body-secondary">
+            <a href="/index/{{pic.user.id}}" class="text-decoration-none fs-4"><i class="bi-person-fill" role="img"></i>
+                <b>{{pic.user.name}}</b></a>
+        </div>
+        <div class="col-9 border bg-body-secondary fs-4">{{pic.title}}</div>
+    </div>
+    <div class="row ms-3">
+        <div class="col-3 border bg-body-secondary">
+            <i class="bi-calendar3" role="img"></i> {{pic.created_date}}<br>
+            <i class="bi-chat-text" role="img"></i> <b>{{pic.com_cnt()}}</b>
+            {% if current_user == pic.user %}
+            <br>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delPictureModal">
+                <i class="bi-trash3" role="img"></i>
+            </button>
+            <!-- Модальное окно удаления фотографии-->
+            <div class="modal fade" id="delPictureModal" tabindex="-1" aria-labelledby="delPictureModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="delPictureModalLabel">Удаление фотографии</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Закрыть"></button>
+                        </div>
+                        <form action="" method="post">
+                            {{ form_pic_del.pic_id(value=pic.id) }}
+                            {{ form_pic_del.hidden_tag() }}
+                            <div class="modal-body">
+                                <div class="">Пожалуйста, подтвердите удаление фотографии и всех комментариев под ней.
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    {{ form_pic_del.submit(type="submit", class="btn btn-danger") }}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editPictureModal">
+                <i class="bi-pencil-square" role="img"></i>
+            </button>
+            <!-- Модальное окно редактирования информации о фотографии-->
+            <div class="modal fade" id="editPictureModal" tabindex="-1" aria-labelledby="editPictureModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="editPictureModalLabel">Редактирование информации</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Закрыть"></button>
+                        </div>
+                        <form action="" method="post">
+                            {{ form_pic_edit.hidden_tag() }}
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    {{ form_pic_edit.title.label }}<br>
+                                    {{ form_pic_edit.title(class="form-control") }}<br>
+                                    {% for error in form_pic_edit.title.errors %}
+                                    <p class="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </p>
+                                    {% endfor %}
+                                </div>
+                                <div class="mb-3">
+                                    {{ form_pic_edit.descr.label }}<br>
+                                    {{ form_pic_edit.descr(class="form-control") }}<br>
+                                    {% for error in form_pic_edit.descr.errors %}
+                                    <p class="alert alert-danger" role="alert">
+                                        {{ error }}
+                                    </p>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    {{ form_pic_edit.submit(type="submit", class="btn btn-success") }}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-9 border bg-body-secondary">{{pic.descr}}</div>
+    </div>
+    <h4 class="m-3">Комментарии</h4>
+    {% for com in pic.comments%}
+    <div class="row mb-3 ms-3">
+        <div class="col-3 border bg-body-secondary">
+            <a href="/index/{{com.user.id}}" class="text-decoration-none"><i class="bi-person-fill" role="img"></i> <b>{{com.user.name}}</b></a><br>
+            <i class="bi-calendar3" role="img"></i> {{com.created_date}}<br>
+            {% if current_user in [com.user, pic.user] %}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#delCommentModal{{com.id}}">
+                <i class="bi-trash3" role="img"></i>
+            </button>
+            <!-- Модальное окно удаления комментария-->
+            <div class="modal fade" id="delCommentModal{{com.id}}" tabindex="-1"
+                 aria-labelledby="delCommentModalLabel{{com.id}}"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="delCommentModalLabel{{com.id}}">Удаление комментария</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Закрыть"></button>
+                        </div>
+                        <form action="" method="post">
+                            {{ form_com_del.com_id(value=com.id) }}
+                            {{ form_com_del.hidden_tag() }}
+                            <div class="modal-body">
+                                <div class="">{{ com.content }}</div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    {{ form_com_del.submit(type="submit", class="btn btn-danger") }}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-9 border bg-body-secondary">{{com.content}}</div>
+    </div>
+    {% endfor %}
+    {% if current_user.is_authenticated %}
+    <button type="button" class="btn btn-success m-3" data-bs-toggle="modal" data-bs-target="#addCommentModal">
+        <i class="bi-chat-text" role="img"></i> Написать комментарий
+    </button>
+    <!-- Модальное окно добавления комментария-->
+    <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addCommentModalLabel">Комментарий к фотографии</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <form action="" method="post">
+                    {{ form_com_add.hidden_tag() }}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            {{ form_com_add.content(class="form-control") }}
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            {{ form_com_add.submit(type="submit", class="btn btn-primary") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-secondary m-3">
+        Для добавления комментария нужно авторизоваться.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if user %}
+<h2>{{user.name}}</h2>
+<div class="alert alert-secondary" role="alert">
+    <div class="row">
+        <div class="col-1"><i class="bi-image" role="img"></i> Файлы: <b>{{user.pic_cnt()}}</b></div>
+        <div class="col-2"><i class="bi-chat-text" role="img"></i> Комментарии: <b>{{user.com_cnt()}}</b></div>
+        <div class="col"><i class="bi-calendar3" role="img"></i> Дата регистрации: <b>{{user.created_date}}</b></div>
+    </div>
+    <div class="row">
+        <div class="col">{{user.about}}</div>
+    </div>
+    </div>
+{% else %}
+<h2>Последние поступления</h2>
+{% endif %}
+<div class="container-fluid overflow-hidden">
+    <div class="row row-cols-auto row-gap-3">
+        {% for item in items%}
+        <div class="container overflow-hidden">
+            <div class="col border rounded bg-dark-subtle">
+                <div class="p-3">
+                    <div>{{item.title}}</div>
+                    <div>
+                        <a href="/picview/{{item.id}}"><img src="/static/thumb/{{item.filename}}" class="img-thumbnail"></a>
+                    </div>
+                    <div>
+                        <i class="bi-person-fill" role="img"></i> {{item.user.name}}<br>
+                        <i class="bi-calendar3" role="img"></i> {{item.created_date}}<br>
+                        <i class="bi-chat-text" role="img"></i> {{item.com_cnt()}}<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

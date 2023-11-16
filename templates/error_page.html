@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2><i class="bi-bug" role="img"></i> Ошибка {{error.code}} ({{error.name}})</h2>
+    <div class="alert alert-danger" role="alert">
+        <h4><i class="bi-bug-fill" role="img"></i> {{error.description}}</h4>
+    </div>
+</div>
+{% endblock %}
