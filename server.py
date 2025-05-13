@@ -10,6 +10,8 @@ from data.comments import Comment
 from forms.user import RegisterForm, LoginForm, UserEditForm, ChangePasswordForm, UserSortForm
 from forms.picture import PictureAddForm, PictureEditForm, PictureDelForm
 from forms.comment import CommentAddForm, CommentDelForm
+from flask_admin import Admin, BaseView, expose
+from flask_admin.contrib.sqla import ModelView
 
 app = Flask(__name__)
 app.debug = False
@@ -276,6 +278,11 @@ def request_error(err):
 
 def main():
     db_session.global_init("db/database.db")
+    db_sess = db_session.create_session()
+    admin = Admin(app, name='Админка', template_mode='bootstrap3')
+    admin.add_view(ModelView(User, db_sess, name='Users'))
+    admin.add_view(ModelView(Picture, db_sess, name='Pictures'))
+    admin.add_view(ModelView(Comment, db_sess, name='Comments'))
     app.run()
 
 
