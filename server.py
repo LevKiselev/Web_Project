@@ -13,6 +13,16 @@ from forms.comment import CommentAddForm, CommentDelForm
 from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 
+class MyModelView(ModelView):
+    excluded_list_columns = ('hashed_password',)
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.status > 1
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect("/login")
+
+
 app = Flask(__name__)
 app.debug = False
 app.config['SECRET_KEY'] = 'klentest_secret_key'
@@ -279,10 +289,10 @@ def request_error(err):
 def main():
     db_session.global_init("db/database.db")
     db_sess = db_session.create_session()
-    admin = Admin(app, name='Админка', template_mode='bootstrap3')
-    admin.add_view(ModelView(User, db_sess, name='Users'))
-    admin.add_view(ModelView(Picture, db_sess, name='Pictures'))
-    admin.add_view(ModelView(Comment, db_sess, name='Comments'))
+    admin = Admin(app, template_mode='bootstrap4')
+    admin.add_view(MyModelView(User, db_sess, name='Users'))
+    admin.add_view(MyModelView(Picture, db_sess, name='Pictures'))
+    admin.add_view(MyModelView(Comment, db_sess, name='Comments'))
     app.run()
 
 

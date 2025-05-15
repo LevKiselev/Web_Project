@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -43,6 +43,9 @@
                 <i class="bi-person-fill" role="img"></i> {{ current_user.name }}
             </button>
             <ul class="dropdown-menu">
+                {% if current_user.status > 1 %}
+                <li><a class="dropdown-item" href="/admin">Панель Администратора</a></li>
+                {% endif %}
                 <li><a class="dropdown-item" href="/index/{{current_user.id}}">Мой альбом</a></li>
                 <li><a class="dropdown-item" href="/user_edit">Редактор профиля</a></li>
                 <li><a class="dropdown-item" href="/passw_edit">Cмена пароля</a></li>

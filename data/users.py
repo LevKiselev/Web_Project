@@ -40,5 +40,6 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now().replace(microsecond=0))
     last_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now().replace(microsecond=0))
+    status = sqlalchemy.Column(sqlalchemy.Integer, default=1)
     pictures = orm.relationship("Picture", back_populates='user')
     comments = orm.relationship("Comment", back_populates='user')
