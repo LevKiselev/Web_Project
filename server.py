@@ -14,7 +14,7 @@ from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 
 class MyModelView(ModelView):
-    excluded_list_columns = ('hashed_password',)
+    column_exclude_list = ('hashed_password',)
 
     def is_accessible(self):
         return current_user.is_authenticated and current_user.status > 1
