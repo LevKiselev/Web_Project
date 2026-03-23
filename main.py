@@ -10,6 +10,19 @@ from data.comments import Comment
 from forms.user import RegisterForm, LoginForm, UserEditForm, ChangePasswordForm, UserSortForm
 from forms.picture import PictureAddForm, PictureEditForm, PictureDelForm
 from forms.comment import CommentAddForm, CommentDelForm
+from flask_admin import Admin, BaseView, expose
+from flask_admin.contrib.sqla import ModelView
+from waitress import serve
+
+class MyModelView(ModelView):
+    excluded_list_columns = ('hashed_password',)
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.status > 1
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect("/login")
+
 
 app = Flask(__name__)
 app.debug = False
@@ -24,6 +37,7 @@ errors = {
     404: "К сожалению, такая страница не найдена...",
     401: "Для входа на эту страницу требуется авторизация."
 }
+
 
 def user_last_time_update():
     if current_user.is_authenticated:
@@ -111,10 +125,10 @@ def userlist():
     if form_sort.validate_on_submit():
         sorting = form_sort.select.data
     db_sess = db_session.create_session()
-    if sorting =="pics":
+    if sorting == "pics":
         users = db_sess.query(User).all()
         users.sort(key=User.pic_cnt, reverse=True)
-    elif sorting =="comments":
+    elif sorting == "comments":
         users = db_sess.query(User).all()
         users.sort(key=User.com_cnt, reverse=True)
     else:
@@ -275,8 +289,13 @@ def request_error(err):
 
 def main():
     db_session.global_init("db/database.db")
-    app.run()
-
+    db_sess = db_session.create_session()
+    admin = Admin(app, template_mode='bootstrap4')
+    admin.add_view(MyModelView(User, db_sess, name='Users'))
+    admin.add_view(MyModelView(Picture, db_sess, name='Pictures'))
+    admin.add_view(MyModelView(Comment, db_sess, name='Comments'))
+    # app.run(port=8000)
+    serve(app, host='0.0.0.0', port=8000)
 
 if __name__ == '__main__':
     main()

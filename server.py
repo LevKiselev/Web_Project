@@ -293,7 +293,7 @@ def main():
     admin.add_view(MyModelView(User, db_sess, name='Users'))
     admin.add_view(MyModelView(Picture, db_sess, name='Pictures'))
     admin.add_view(MyModelView(Comment, db_sess, name='Comments'))
-    app.run()
+    app.run(port=8000)
 
 
 if __name__ == '__main__':

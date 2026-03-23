@@ -1,25 +1,23 @@
 #!/bin/bash
+cd webtest # Your app working directory!!!
+export PORT=8000
+unset PIP_USER
 
-# Exit early on errors
-set -eu
-
-# Python buffers stdout. Without this, you won't see what you "print" in the Activity Logs
-export PYTHONUNBUFFERED=true
-
-# Install Python 3 virtual env
-VIRTUALENV=./venv
-
-if [ ! -d $VIRTUALENV ]; then
-  python3 -m venv $VIRTUALENV
+# Create venv if not exists
+if [ ! -d "venv" ]; then
+    echo "Creating virtual environment with system site packages..."
+    python3 -m venv venv --system-site-packages
 fi
 
-# Install pip into virtual environment
-if [ ! -f $VIRTUALENV/bin/pip ]; then
-  curl --silent --show-error --retry 5 https://bootstrap.pypa.io/get-pip.py | $VIRTUALENV/bin/python
+# Activate
+source venv/bin/activate
+
+# Try install (might fail if pip is broken, but packages should be there from packager_tool)
+if [ -f "requirements.txt" ]; then
+    echo "Checking dependencies..."
+    # We skip pip install if it fails, assuming packager_tool handled it
+    pip install -r requirements.txt || echo "Pip install failed, but continuing as packages might be pre-installed via system."
 fi
 
-# Install the requirements
-$VIRTUALENV/bin/pip install -r requirements.txt
-
-# Run your glorious application
-$VIRTUALENV/bin/python3 server.py
+echo "Starting application..."
+python main.py
